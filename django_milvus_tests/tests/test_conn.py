@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from django_milvus.fields import rebuild_index, update_entry
+from django_milvus.utils import rebuild_index, update_entry
 from django_milvus_tests.models import Product
 
 
@@ -13,6 +13,7 @@ class TestMilvusConnection(TestCase):
         rebuild_index(Product)
 
     def test_update_entry(self):
+        rebuild_index(Product)
         for i in range(10):
             product = Product.objects.create(similarity=[12, 34])
             update_entry(product)

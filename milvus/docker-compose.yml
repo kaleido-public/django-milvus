@@ -1,4 +1,4 @@
-version: '3.5'
+version: "3.5"
 
 services:
   etcd:
@@ -36,11 +36,22 @@ services:
       MINIO_ADDRESS: minio:9000
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
+      - ./milvus.yml:/milvus/configs/milvus.yaml:ro
     ports:
       - "19530:19530"
     depends_on:
       - "etcd"
       - "minio"
+
+  insight:
+    image: milvusdb/milvus-insight
+    environment:
+      MILVUS_URL: standalone:19530
+      HOST_URL: http://localhost:5000
+    ports:
+      - "5000:3000"
+    depends_on:
+      - "standalone"
 
 networks:
   default:

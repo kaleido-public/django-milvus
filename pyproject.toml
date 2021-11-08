@@ -16,6 +16,10 @@ pymilvus = "2.0.0rc8"
 django-stubs = "^1.9.0"
 coverage = "^6.1.1"
 autoflake8 = "^0.2.2"
+snakeviz = "^2.1.1"
+isort = "^5.10.0"
+flake8 = "^4.0.1"
+autoflake = "^1.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

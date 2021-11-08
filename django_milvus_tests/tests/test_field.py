@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from django_milvus.fields import MilvusField, rebuild_index, update_entry
+from django_milvus.utils import rebuild_index
 from django_milvus_tests.models import Product
 
 

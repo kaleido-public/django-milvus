@@ -1,5 +1,6 @@
 *.sqlite3
 __pycache__/
-mulvus/volumes/
+milvus/volumes/
 .coverage
 coverage.xml
+cprofile

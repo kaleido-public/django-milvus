@@ -1,19 +1,17 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Type
-from django.db.models import Transform
-from django.db.models import Field
+
 from django.db.models.base import Model
-from django.db.models.expressions import Col
 from django.db.models.lookups import Lookup
-from pymilvus.orm import collection
-from pymilvus.orm.search import SearchResult
 
 if TYPE_CHECKING:
     from django_milvus.connection import Connection
+    from django_milvus.fields import MilvusField
 
 
 def get_nearest_n(
-    count: int, model: Type[Model], field_name: str, connection: Connection
+    count: int, model: Type[Model], field: MilvusField, connection: Connection
 ) -> Type[Lookup]:
     class NearestN(Lookup):
         def get_prep_lookup(self):
@@ -25,10 +23,10 @@ def get_nearest_n(
             collection.load()
             result = collection.search(
                 [target_vector],
-                field_name,
+                field.attname,
                 param={
-                    "metric_type": "L2",
-                    "params": {"nprobe": 10},
+                    "metric_type": field.metric_type,
+                    "params": {"nprobe": field.nprobe},
                 },
                 limit=count,
             )

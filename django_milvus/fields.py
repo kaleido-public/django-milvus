@@ -1,20 +1,37 @@
 from __future__ import annotations
-from typing import Any, List, Type
-from django.db.models import JSONField, Field, QuerySet
-from django.db.models.base import Model
-from django.db.models.lookups import Lookup, Transform
+
+from typing import TYPE_CHECKING, Type
+
+from django.db.models import JSONField
+from django.db.models.lookups import Lookup
 from pymilvus.client.types import DataType
 
 from .lookups import get_nearest_n
 
+if TYPE_CHECKING:
+    from django_milvus.connection import Connection
+
 
 class MilvusField(JSONField):
     def __init__(
-        self, dim: int, dtype: DataType, *args, dbname: str = "default", **kwargs
+        self,
+        dim: int,
+        dtype: DataType,
+        *args,
+        dbname: str = "default",
+        nlist: int = 1024,
+        nprobe: int = 32,
+        metric_type: str = "L2",
+        index_type: str = "IVF_FLAT",
+        **kwargs
     ):
         self.dim = dim
         self.dtype = dtype
         self.dbname = dbname
+        self.nlist = nlist
+        self.nprobe = nprobe
+        self.metric_type = metric_type
+        self.index_type = index_type
         super().__init__(*args, **kwargs)
 
     def get_connection_class(self):
@@ -22,7 +39,7 @@ class MilvusField(JSONField):
 
         return Connection
 
-    def get_connection(self):
+    def get_connection(self) -> Connection:
         return self.get_connection_class()(self.dbname)
 
     def deconstruct(self):
@@ -32,6 +49,10 @@ class MilvusField(JSONField):
                 "dim": self.dim,
                 "dtype": self.dtype,
                 "dbname": self.dbname,
+                "nlist": self.nlist,
+                "nprobe": self.nprobe,
+                "metric_type": self.metric_type,
+                "index_type": self.index_type,
             }
         )
         return name, path, args, kwargs
@@ -42,7 +63,7 @@ class MilvusField(JSONField):
                 return get_nearest_n(
                     int(lookup_name[8:]),
                     self.model,
-                    self.attname,
+                    self,
                     self.get_connection(),
                 )
             except ValueError:
@@ -51,27 +72,3 @@ class MilvusField(JSONField):
                 )
         else:
             raise ValueError("Not supported lookup: " + lookup_name)
-
-
-def rebuild_index(model: Type[Model]):
-    """Removes milvus collection and recreate."""
-    dbnames = set()
-    for field in model._meta.get_fields():
-        if isinstance(field, MilvusField):
-            if field.dbname in dbnames:
-                continue
-            dbnames.add(field.dbname)
-            conn = field.get_connection()
-            conn.connect()
-            if conn.has_collection(model):
-                conn.remove_collection(model)
-            conn.create_collection(model)
-    for instance in QuerySet(model=model).all():
-        update_entry(instance)
-
-
-def update_entry(instance: Model):
-    for field in instance._meta.get_fields():
-        if isinstance(field, MilvusField):
-            conn = field.get_connection()
-            conn.update_entry(instance)
