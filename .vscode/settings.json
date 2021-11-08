@@ -1,0 +1,23 @@
+{
+  "python.linting.flake8Enabled": false,
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
+  "files.exclude": {
+    ".mypy_cache/": true,
+    ".venv/": true,
+    "**/__pycache__": true
+  },
+  "coverage-gutters.coverageBaseDir": "./django_milvus_tests/tests/",
+  "coverage-gutters.showGutterCoverage": false,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml"
+  ],
+  // "coverage-gutters.remotePathResolve": ["", "/api-server/server-tests/htmlcov"],
+  // "coverage-gutters.coverageReportFileName": "server-tests/htmlcov/index.html",
+  "coverage-gutters.xmlname": "coverage.xml",
+  "coverage-gutters.showRulerCoverage": true
+}

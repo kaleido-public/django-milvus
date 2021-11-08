@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "django-milvus"
+version = "0.1.0"
+description = "Store and search similar vectors in Django using milvus"
+authors = ["Yu Li <ylilarry@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^3.2.9"
+
+[tool.poetry.dev-dependencies]
+black = "mypy"
+mypy = "^0.910"
+pymilvus = "2.0.0rc8"
+django-stubs = "^1.9.0"
+coverage = "^6.1.1"
+autoflake8 = "^0.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

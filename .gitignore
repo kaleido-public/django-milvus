@@ -1,0 +1,5 @@
+*.sqlite3
+__pycache__/
+mulvus/volumes/
+.coverage
+coverage.xml
