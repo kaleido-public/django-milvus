@@ -13,13 +13,16 @@ def random_vector(dim: int):
 
 class TestMilvusField(TestCase):
     def test_repeated_search(self):
-        for i in range(10000):
-            p1 = Product.objects.create(similarity=random_vector(dim=2))
+        print("create items")
+        Product.objects.bulk_create(
+            [Product(largefield=random_vector(dim=16)) for _ in range(10 ** 6)]
+        )
+        print("rebuild_index")
         rebuild_index(Product)
         with cProfile.Profile() as pr:
             for i in range(100):
                 product = Product.objects.filter(
-                    similarity__nearest_50=random_vector(dim=2)
+                    largefield__nearest_50=random_vector(dim=16)
                 ).first()
                 print(product)
         pr.dump_stats("cprofile")

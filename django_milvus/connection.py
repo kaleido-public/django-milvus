@@ -1,4 +1,6 @@
-from typing import Any, List, Type
+from typing import Any, Iterable, List, Type
+from django.db.models import query
+from django.db.models.query import QuerySet
 
 import pymilvus
 from django.conf import settings
@@ -104,6 +106,10 @@ class Connection:
         self.delete_entry(instance)
         self.insert_entry(instance)
 
+    def bulk_update_entries(self, queryset: QuerySet):
+        self.bulk_delete_entries(queryset)
+        self.bulk_insert_entries(queryset)
+
     def check_schema(self, model: Type[Model]):
         current_fields = self.get_milvus_field_schemas(model)
         collection_fields: List[FieldSchema] = self.get_collection(model).schema.fields
@@ -118,14 +124,28 @@ class Connection:
         # collection.delete(pk)
         ...
 
+    def bulk_delete_entries(self, queryset: QuerySet):
+        ...
+
     def insert_entry(self, instance: Model):
         collection = self.get_collection(instance._meta.model)
         collection.insert(self.get_milvus_values(instance))
+
+    def bulk_insert_entries(self, queryset: QuerySet):
+        if queryset:
+            collection = self.get_collection(queryset.model)
+            collection.insert(self.get_bulk_milvus_values(queryset))
 
     def get_milvus_values(self, instance: Model) -> List[Any]:
         fields = self.get_sorted_model_fields(instance._meta.model)
         values = [getattr(instance, f.attname) for f in fields]
         return [[instance.pk]] + [[v] for v in values]
+
+    def get_bulk_milvus_values(self, queryset: QuerySet):
+        fields = self.get_sorted_model_fields(queryset.model)
+        values = queryset.values_list("pk", *[f.attname for f in fields])
+        transposed = list(zip(*values))  # transpose
+        return transposed
 
     def flush(self, model: Type[Model]):
         pymilvus.utility.get_connection().flush([self.get_collection_name(model)])

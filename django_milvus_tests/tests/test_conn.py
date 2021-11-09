@@ -2,6 +2,10 @@ from django.test import TestCase
 
 from django_milvus.utils import rebuild_index, update_entry
 from django_milvus_tests.models import Product
+import random
+
+def random_vector(dim: int):
+    return [random.randrange(-100, 100) for _ in range(dim)]
 
 
 class TestMilvusConnection(TestCase):
