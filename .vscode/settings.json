@@ -19,5 +19,7 @@
   // "coverage-gutters.remotePathResolve": ["", "/api-server/server-tests/htmlcov"],
   // "coverage-gutters.coverageReportFileName": "server-tests/htmlcov/index.html",
   "coverage-gutters.xmlname": "coverage.xml",
-  "coverage-gutters.showRulerCoverage": true
+  "coverage-gutters.showRulerCoverage": true,
+  "mypy.runUsingActiveInterpreter": true,
+  "mypy.configFile": "mypy.ini"
 }

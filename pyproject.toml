@@ -6,10 +6,11 @@ authors = ["Yu Li <ylilarry@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-Django = "^3.2.9"
+python = ">=3.8,<3.11"
+numpy = "^1.21.5"
 
 [tool.poetry.dev-dependencies]
+Django = "^3.2.9"
 black = "mypy"
 mypy = "^0.910"
 pymilvus = "2.0.0rc8"
@@ -20,6 +21,7 @@ snakeviz = "^2.1.1"
 isort = "^5.10.0"
 flake8 = "^4.0.1"
 autoflake = "^1.4"
+psycopg2-binary = "^2.9.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

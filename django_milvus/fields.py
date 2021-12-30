@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Any, Type
 
 from django.db.models import JSONField
 from django.db.models.lookups import Lookup
@@ -17,14 +17,14 @@ class MilvusField(JSONField):
         self,
         dim: int,
         dtype: DataType,
-        *args,
+        *args: Any,
         dbname: str = "default",
         nlist: int = 1024,
         nprobe: int = 32,
         metric_type: str = "L2",
         index_type: str = "IVF_FLAT",
-        **kwargs
-    ):
+        **kwargs: Any,
+    ) -> None:
         self.dim = dim
         self.dtype = dtype
         self.dbname = dbname
@@ -34,7 +34,7 @@ class MilvusField(JSONField):
         self.index_type = index_type
         super().__init__(*args, **kwargs)
 
-    def get_connection_class(self):
+    def get_connection_class(self) -> Type["Connection"]:
         from .connection import Connection
 
         return Connection

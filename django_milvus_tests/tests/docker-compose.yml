@@ -1,0 +1,9 @@
+version: "2.7"
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5333:5432" # postgres

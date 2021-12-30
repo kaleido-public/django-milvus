@@ -1,5 +1,6 @@
 import cProfile
 import random
+from typing import List
 
 from django.test import TestCase
 
@@ -7,7 +8,7 @@ from django_milvus.utils import rebuild_index
 from django_milvus_tests.models import Product
 
 
-def random_vector(dim: int):
+def random_vector(dim: int) -> List[int]:
     return [random.randrange(-100, 100) for _ in range(dim)]
 
 

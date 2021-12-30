@@ -4,3 +4,4 @@ milvus/volumes/
 .coverage
 coverage.xml
 cprofile
+dist

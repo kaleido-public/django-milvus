@@ -1,11 +1,13 @@
+import random
+from typing import List
+
 from django.test import TestCase
 
 from django_milvus.utils import rebuild_index
 from django_milvus_tests.models import Product
-import random
 
 
-def random_vector(dim: int):
+def random_vector(dim: int) -> List[int]:
     return [random.randrange(-100, 100) for _ in range(dim)]
 
 
@@ -28,7 +30,7 @@ class TestMilvusField(TestCase):
         rebuild_index(Product)
 
         actual = Product.objects.filter(similarity__nearest_1=[-1, -1]).first()
-        self.assertEqual(p1, actual)
+        self.assertEqual(p1, actual, f"{p1.pk=}")
 
         actual = Product.objects.filter(similarity__nearest_1=[99, 99]).first()
         self.assertEqual(p2, actual)

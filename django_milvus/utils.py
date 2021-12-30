@@ -7,7 +7,7 @@ from django_milvus.connection import Connection
 from django_milvus.fields import MilvusField
 
 
-def rebuild_index(model: Type[Model]):
+def rebuild_index(model: Type[Model]) -> None:
     """Removes milvus collection and recreate."""
     fields = [f for f in model._meta.get_fields() if isinstance(f, MilvusField)]
     dbnames = set([f.dbname for f in fields])
@@ -24,7 +24,7 @@ def rebuild_index(model: Type[Model]):
         conn.flush(model)
 
 
-def update_entry(instance: Model):
+def update_entry(instance: Model) -> None:
     fields = [f for f in instance._meta.get_fields() if isinstance(f, MilvusField)]
     dbnames = set([f.dbname for f in fields])
     for db in dbnames:
