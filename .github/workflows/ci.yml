@@ -1,0 +1,67 @@
+on:
+  push:
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DOCKER_LOGIN_PASSWD: ${{ secrets.YLILARRY_DOCKERHUB_TOKEN }}
+
+    steps:
+      - name: Display runner status
+        run: |
+          echo "hostname -f: $(hostname -f)"
+          echo "whoami: $(whoami)"
+          echo "pwd: $(pwd)"
+
+      - name: Change work directory permission
+        run: sudo chown -R $(whoami):$(whoami) .
+
+      - name: Run git checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          clean: true
+          fetch-depth: 2
+          submodules: recursive
+
+      - name: Set up env vars
+        run: |
+          .github/workflows/set_env.py
+          .github/workflows/set_env.py -w
+
+      - name: Install SDK
+        run: |
+          sudo -E .github/workflows/installation.py
+
+      - name: Cancel Previous Runs
+        if: env.IS_DEV_BRANCH == 'True'
+        uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Create PR
+        if: env.IS_DEV_BRANCH == 'True' || env.BRANCH_NAME == 'staging'
+        run: |
+          gh auth login --with-token <<< "${{ github.token }}"
+          git config --global user.name "${COMMIT_AUTHOR}"
+          git config --global user.email "${COMMIT_AUTHOR_EMAIL}"
+          .github/workflows/create_pr.py \
+              --title "${TARGET_BRANCH} <- ${BRANCH_NAME}: ${COMMIT_TITLE}" \
+              --base "${TARGET_BRANCH}" \
+              --head "${BRANCH_NAME}" \
+              --body "${PR_BODY}"
+
+      - name: Run style check
+        run: |
+          ./bin/checkstyle.py
+
+      - name: Run tests
+        run: |
+          (cd ./django_milvus_tests/tests && make)
+
+      - name: Shutdown
+        if: always()
+        run: |
+          echo shutdown
